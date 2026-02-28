@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Automated weather briefing delivered via Telegram every morning at 9:00 AM local time. Fetches forecast by coordinates, parses 4 time periods (morning/day/evening/night), translates weather condition codes to local language, and sends formatted message with temperature, feels-like, humidity, and wind speed.
+Automated weather briefing delivered via dingtalk every morning at 9:00 AM local time. Fetches forecast by coordinates, parses 4 time periods (morning/day/evening/night), translates weather condition codes to local language, and sends formatted message with temperature, feels-like, humidity, and wind speed.
 
 **Why it matters**: Eliminates the need to check weather apps; proactive information delivery before the day starts.
 
@@ -13,7 +13,6 @@ Automated weather briefing delivered via Telegram every morning at 9:00 AM local
 | Skill | Source | Purpose |
 |-------|--------|---------|
 | `weather` | Built-in | Fetch forecast data |
-| `telegram` | Built-in | Deliver report |
 | `cron` | Built-in | Daily automation |
 
 ## How to Setup
@@ -30,42 +29,51 @@ Automated weather briefing delivered via Telegram every morning at 9:00 AM local
 
 ```javascript
 const CONFIG = {
-  lat: 51.53,      // Your latitude
-  lon: 46.03,      // Your longitude
-  lang: "ru_RU",   // Output language
-  timezone: "Europe/Moscow"
-};
-```
+  lat: 31.23,          // 上海纬度
+  lon: 121.47,         // 上海经度
+  lang: "zh_CN",       // 建议改为中文
+  timezone: "Asia/Shanghai"
+};```
 
 ### 3. Create Weather Parser
 
-```javascript
 const conditionMap = {
-  "clear": "ясно",
-  "overcast": "пасмурно",
-  "cloudy": "облачно",
-  "rain": "дождь",
-  "snow": "снег",
-  "partly-cloudy": "переменная облачность"
+  "clear": "晴朗",
+  "overcast": "阴沉",
+  "cloudy": "多云",
+  "rain": "雨",
+  "snow": "雪",
+  "partly-cloudy": "局部多云"
 };
 
 function formatWeather(data) {
+  // 确保数据存在，防止报错
+  if (!data || !data.forecasts || !data.forecasts[0] || !data.forecasts[0].parts) {
+    return "⚠️ 暂时无法获取天气详情";
+  }
+
   const parts = data.forecasts[0].parts;
+  
+  // 辅助函数：安全获取天气状况描述，防止 conditionMap 中缺少 key
+  const getCondition = (timeOfDay) => {
+    const condition = parts[timeOfDay]?.condition;
+    return conditionMap[condition] || condition || "未知";
+  };
+
   return `
-🌤️ Погода на сегодня:
+🌤️ 今日天气（上海）：
 
-🌅 Утро: ${parts.morning.temp_avg}°C (${conditionMap[parts.morning.condition]})
-🌞 День: ${parts.day.temp_avg}°C (ощущается ${parts.day.feels_like}°C)
-🌆 Вечер: ${parts.evening.temp_avg}°C
-🌙 Ночь: ${parts.night.temp_avg}°C
+🌅 早晨：${parts.morning.temp_avg}°C (${getCondition('morning')})
+🌞 白天：${parts.day.temp_avg}°C (体感 ${parts.day.feels_like}°C)
+🌆 傍晚：${parts.evening.temp_avg}°C (${getCondition('evening')})
+🌙 夜间：${parts.night.temp_avg}°C (${getCondition('night')})
 
-💧 Влажность: ${parts.day.humidity}%
-💨 Ветер: ${parts.day.wind_speed} м/с
+💧 湿度：${parts.day.humidity}%
+💨 风速：${parts.day.wind_speed} 米/秒
   `.trim();
-}
-```
+}```
 
-### 4. Prompt Template
+### 4.Prompt Template
 
 Add to your `SKILL.md`:
 
@@ -97,23 +105,7 @@ Alert if:
 }
 ```
 
-### 6. Telegram Message Format
 
-```markdown
-🌤️ Погода на {{date}}
-
-🌅 Утро: {{morning_temp}}°C ({{morning_condition}})
-🌞 День: {{day_temp}}°C (ощущается {{feels_like}}°C)
-🌆 Вечер: {{evening_temp}}°C
-🌙 Ночь: {{night_temp}}°C
-
-💧 Влажность: {{humidity}}%
-💨 Ветер: {{wind_speed}} м/с
-
-{{#alert}}
-⚠️ {{alert_message}}
-{{/alert}}
-```
 
 ## Success Metrics
 

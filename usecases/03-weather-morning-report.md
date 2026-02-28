@@ -6,7 +6,7 @@ Automated weather briefing delivered via dingtalk every morning at 9:00 AM local
 
 **Why it matters**: Eliminates the need to check weather apps; proactive information delivery before the day starts.
 
-**Real-world example**: Saratov, Russia - daily forecast at 51.53, 46.03 coordinates with Russian language output.
+**Real-world example**: 中国上海 - 基于坐标 31.23, 121.47 的每日天气预报，输出语言为中文。
 
 ## Skills You Need
 
@@ -17,12 +17,14 @@ Automated weather briefing delivered via dingtalk every morning at 9:00 AM local
 
 ## How to Setup
 
-### 1. Get API Key
+### 1. Get MCP server
 
 ```
-1. Visit https://yandex.ru/pogoda/b2b/smarthome
-2. Register for free API key (50 requests/day)
-3. Save key to environment: YANDEX_WEATHER_API_KEY
+1、利用已经配置好的MCP天气服务
+2、参数为：
+   "key": "market-cmapi033617",
+  "name": "阿里云百炼_天气预报查询",
+  "description": "天气预报查询是万维易源提供的一个通过输入坐标、IP、地名、区号/邮编、景点名称，查询天气情况（湿度、天气图标、当前温度、风向、风级、紫外线、穿衣指南、空气指数等）信息的服务。支持当前天气、未来24小时、7天、15天、40天天气预报及历史天气查询。",
 ```
 
 ### 2. Configure Location
@@ -85,7 +87,7 @@ Every morning at 09:00 local time:
 2. Parse 4 time periods: morning, day, evening, night
 3. Translate condition codes to Russian
 4. Format message with emojis
-5. Send via Telegram
+5. Send via dingtalk
 6. Log temperature to memory/weather-log.md for trends
 
 Alert if:
@@ -99,11 +101,10 @@ Alert if:
 ```json
 {
   "schedule": "0 9 * * *",
-  "timezone": "Europe/Moscow",
+  "timezone": "Asia/Shanghai",
   "task": "weather_report",
   "action": "fetch_and_send_weather"
-}
-```
+}```
 
 
 

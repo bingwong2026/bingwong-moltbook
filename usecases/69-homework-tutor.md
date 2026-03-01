@@ -15,7 +15,7 @@ Not a replacement for learning — a supplement that makes homework less frustra
 ## How to Setup
 
 ### Prerequisites
-- Telegram bot connected to OpenClaw
+- dingtalk bot connected to OpenClaw
 - Child's grade level and subjects
 
 ### Prompt Template

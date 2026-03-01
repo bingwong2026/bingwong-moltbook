@@ -16,7 +16,7 @@ One message in, a complete trip plan out.
 ## How to Setup
 
 ### Prerequisites
-- Telegram bot connected to OpenClaw
+- dingtalk bot connected to OpenClaw
 - Your travel preferences
 
 ### Prompt Template
